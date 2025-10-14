@@ -5,7 +5,7 @@ apps=(
   # "google-chrome.desktop"
   "app.zen_browser.zen.desktop"
   "md.obsidian.Obsidian.desktop"
-  # TODO: doublecmd
+  "doublecmd.desktop"
   "Alacritty.desktop"
   "com.bitwarden.desktop"
   "Activity.desktop"
