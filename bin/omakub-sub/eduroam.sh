@@ -29,6 +29,7 @@ fi
 echo "Running Python script..."
 if python3 "$TEMP_SCRIPT"; then
   echo "✓ Script execution complete"
+  echo "If the network does not connect, try re-entering the email in WIFI settings and selecting 'Automatic' for PEAP version."
 else
   echo "✗ Script execution failed"
   exit 1
