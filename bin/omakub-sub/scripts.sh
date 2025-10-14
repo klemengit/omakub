@@ -3,6 +3,7 @@
 CHOICES=(
   "Firefox symlink   Create a symlink from firefox (snap) to system, so the system discovers the certificates."
   "nidaqmx driver    Install the nidaqmx driver."
+  "eduroam           Set up eduroam wifi."
   "<< Back           "
 )
 
@@ -17,6 +18,7 @@ else
   case "$INSTALLER" in
   "firefox-symlink") INSTALLER_FILE="$OMAKUB_PATH/bin/omakub-sub/firefox-symlink.sh" ;;
   "nidaqmx-driver") INSTALLER_FILE="$OMAKUB_PATH/bin/omakub-sub/nidaqmx.sh" ;;
+  "eduroam") INSTALLER_FILE="$OMAKUB_PATH/bin/omakub-sub/eduroam.sh" ;;
   # ...
   esac
 
