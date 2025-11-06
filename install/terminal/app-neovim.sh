@@ -34,11 +34,11 @@ echo "✓ neovim-remote installation complete"
 
 # Only attempt to set configuration if Neovim has never been run
 if [ ! -d "$HOME/.config/nvim" ]; then
-  echo "nvim configuration is not present. Clone the LazyVim or your own to ~/.config/nvim."
-  # # Use LazyVim
-  # git clone https://github.com/LazyVim/starter ~/.config/nvim
-  # # Remove the .git folder, so you can add it to your own repo later
-  # rm -rf ~/.config/nvim/.git
+  echo "nvim configuration is not present. Cloning your configuration from github.com/klemengit/nvim..."
+  # Use your personal Neovim configuration
+  git clone https://github.com/klemengit/nvim ~/.config/nvim
+  # Remove the .git folder, so you can add it to your own repo later
+  rm -rf ~/.config/nvim/.git
   #
   # # Make everything match the terminal transparency
   # mkdir -p ~/.config/nvim/plugin/after
