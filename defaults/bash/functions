@@ -135,3 +135,13 @@ alias fix_fkeys='echo 2 | sudo tee /sys/module/hid_apple/parameters/fnmode'
 
 # Spotify window is too large on many displays, so fix this by zooming it down
 alias fix_spotify_window_size="sudo sed -i 's|^Exec=.*|Exec=spotify --force-device-scale-factor=1.5 %U|' /usr/local/share/applications/spotify.desktop"
+
+# Activate Python virtual environment if .venv exists
+va() {
+  if [ -d ".venv" ]; then
+    source .venv/bin/activate
+  else
+    echo "Error: .venv directory not found in current directory"
+    return 1
+  fi
+}
