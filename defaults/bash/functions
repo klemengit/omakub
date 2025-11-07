@@ -138,10 +138,36 @@ alias fix_spotify_window_size="sudo sed -i 's|^Exec=.*|Exec=spotify --force-devi
 
 # Activate Python virtual environment if .venv exists
 va() {
+  local init_if_missing=false
+
+  # Parse arguments
+  while getopts "i" opt; do
+    case $opt in
+      i)
+        init_if_missing=true
+        ;;
+      \?)
+        echo "Usage: va [-i]"
+        echo "  -i: Initialize virtual environment with uv if .venv doesn't exist"
+        return 1
+        ;;
+    esac
+  done
+
   if [ -d ".venv" ]; then
     source .venv/bin/activate
+  elif [ "$init_if_missing" = true ]; then
+    echo "Initializing virtual environment with uv..."
+    uv init --bare && uv venv
+    if [ $? -eq 0 ]; then
+      source .venv/bin/activate
+    else
+      echo "Error: Failed to initialize virtual environment"
+      return 1
+    fi
   else
     echo "Error: .venv directory not found in current directory"
+    echo "Run 'va -i' to initialize a new virtual environment"
     return 1
   fi
 }
