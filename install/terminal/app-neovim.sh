@@ -13,20 +13,6 @@ cd -
 sudo apt install -y luarocks tree-sitter-cli
 
 # Install the neovim-remote, required for vimtex
-# Install also pipx
-# Install pipx if not already installed
-if ! command -v pipx &>/dev/null; then
-  gum spin --spinner meter --title "Installing pipx" -- \
-    sudo apt install -y pipx
-  echo "✓ pipx installed"
-else
-  echo "✓ pipx already installed"
-fi
-
-# Ensure pipx path is configured
-pipx ensurepath
-
-# Install neovim-remote
 gum spin --spinner meter --title "Installing neovim-remote" -- \
   pipx install neovim-remote
 
@@ -34,11 +20,9 @@ echo "✓ neovim-remote installation complete"
 
 # Only attempt to set configuration if Neovim has never been run
 if [ ! -d "$HOME/.config/nvim" ]; then
-  echo "nvim configuration is not present. Cloning your configuration from github.com/klemengit/nvim..."
+  echo "nvim configuration is not present. Cloning configuration from github.com/klemengit/nvim..."
   # Use your personal Neovim configuration
   git clone https://github.com/klemengit/nvim ~/.config/nvim
-  # Remove the .git folder, so you can add it to your own repo later
-  rm -rf ~/.config/nvim/.git
   #
   # # Make everything match the terminal transparency
   # mkdir -p ~/.config/nvim/plugin/after
