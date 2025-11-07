@@ -4,6 +4,16 @@ Turn a fresh Ubuntu installation into a fully-configured, beautiful, and modern 
 
 Watch the introduction video and read more at [omakub.org](https://omakub.org).
 
+## Personalized version
+
+Though the original version is awesome, this fork adds some of the things that I need personally and removes the things I do not.
+
+To install this version:
+
+```shell
+wget -qO- https://raw.githubusercontent.com/klemengit/omakub/master/start_install | bash
+```
+
 ## Contributing to the documentation
 
 Please help us improve Omakub's documentation on the [basecamp/omakub-site repository](https://github.com/basecamp/omakub-site).
