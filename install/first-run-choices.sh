@@ -1,10 +1,8 @@
 #!/bin/bash
-
 # Only ask for default desktop app choices when running Gnome
 if [[ "$XDG_CURRENT_DESKTOP" == *"GNOME"* ]]; then
-  OPTIONAL_APPS=("1password" "Spotify" "Zoom" "Dropbox" "Inkscape" "GIMP", "DoubleCMD", "BitWarden", "Chromium")
-  DEFAULT_OPTIONAL_APPS='Zoom, Inkscape, GIMP, DoubleCMD, BitWarden, Chromium'
-  export OMAKUB_FIRST_RUN_OPTIONAL_APPS=$(gum choose "${OPTIONAL_APPS[@]}" --no-limit --selected $DEFAULT_OPTIONAL_APPS --height 7 --header "Select optional apps" | tr ' ' '-')
+  OPTIONAL_APPS=("1password" "Spotify" "Zoom" "Dropbox" "Inkscape" "GIMP" "DoubleCMD" "BitWarden" "Chromium")
+  export OMAKUB_FIRST_RUN_OPTIONAL_APPS=$(gum choose "${OPTIONAL_APPS[@]}" --no-limit --selected "Zoom" --selected "Inkscape" --selected "GIMP" --selected "DoubleCMD" --selected "BitWarden" --selected "Chromium" --height 7 --header "Select optional apps" | tr ' ' '-')
 fi
 
 AVAILABLE_LANGUAGES=("Ruby on Rails" "Node.js" "Go" "PHP" "Python" "Elixir" "Rust" "Java")
