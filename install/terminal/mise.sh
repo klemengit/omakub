@@ -1,6 +1,6 @@
 #!/bin/bash
 
-exit 0 # Exit, do not install mise
+return 0 # Exit, do not install mise
 
 # Install mise for managing multiple versions of languages. See https://mise.jdx.dev/
 sudo apt update -y && sudo apt install -y gpg wget curl
