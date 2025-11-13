@@ -5,6 +5,7 @@ CHOICES=(
   "Firefox symlink   Create a symlink from firefox (snap) to system, so the system discovers the certificates."
   "nidaqmx driver    Install the nidaqmx driver."
   "eduroam           Set up eduroam wifi."
+  "Slovenian keyboard  Install Slovenian keyboard layout without dead keys."
   "<< Back           "
 )
 
@@ -21,6 +22,7 @@ else
   "firefox-symlink") INSTALLER_FILE="$OMAKUB_PATH/bin/omakub-sub/firefox-symlink.sh" ;;
   "nidaqmx-driver") INSTALLER_FILE="$OMAKUB_PATH/bin/omakub-sub/nidaqmx.sh" ;;
   "eduroam") INSTALLER_FILE="$OMAKUB_PATH/bin/omakub-sub/eduroam.sh" ;;
+  "slovenian-keyboard") INSTALLER_FILE="$OMAKUB_PATH/bin/omakub-sub/slovenian-keyboard.sh" ;;
   # ...
   esac
 
