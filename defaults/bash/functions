@@ -155,10 +155,25 @@ va() {
   done
 
   if [ -d ".venv" ]; then
+    # Check if pyproject.toml is missing (venv created without project)
+    if [ ! -f "pyproject.toml" ] && [ "$init_if_missing" = true ]; then
+      echo "Found .venv but missing pyproject.toml, initializing project..."
+      uv init --bare
+      if [ $? -ne 0 ]; then
+        echo "Warning: Failed to create pyproject.toml"
+      fi
+    fi
     source .venv/bin/activate
   elif [ "$init_if_missing" = true ]; then
-    echo "Initializing virtual environment with uv..."
-    uv init --bare && uv venv
+    # Check if pyproject.toml exists
+    if [ -f "pyproject.toml" ]; then
+      echo "Found pyproject.toml, creating virtual environment..."
+      uv venv
+    else
+      echo "Initializing new project with uv..."
+      uv init --bare && uv venv
+    fi
+
     if [ $? -eq 0 ]; then
       source .venv/bin/activate
     else
@@ -166,8 +181,14 @@ va() {
       return 1
     fi
   else
-    echo "Error: .venv directory not found in current directory"
-    echo "Run 'va -i' to initialize a new virtual environment"
+    # Check if pyproject.toml exists to give more helpful message
+    if [ -f "pyproject.toml" ]; then
+      echo "Error: Found pyproject.toml but .venv directory not found"
+      echo "Run 'va -i' to create virtual environment for existing project"
+    else
+      echo "Error: .venv directory not found in current directory"
+      echo "Run 'va -i' to initialize a new virtual environment"
+    fi
     return 1
   fi
 }
