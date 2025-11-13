@@ -5,7 +5,7 @@ if [[ "$XDG_CURRENT_DESKTOP" == *"GNOME"* ]]; then
   export OMAKUB_FIRST_RUN_OPTIONAL_APPS=$(gum choose "${OPTIONAL_APPS[@]}" --no-limit --selected "Zoom" --selected "Inkscape" --selected "GIMP" --selected "DoubleCMD" --selected "BitWarden" --selected "Chromium" --height 7 --header "Select optional apps" | tr ' ' '-')
 fi
 
-AVAILABLE_LANGUAGES=("Ruby on Rails" "Node.js" "Go" "PHP" "Python" "Elixir" "Rust" "Java")
+AVAILABLE_LANGUAGES=("Python")
 SELECTED_LANGUAGES="Python"
 export OMAKUB_FIRST_RUN_LANGUAGES=$(gum choose "${AVAILABLE_LANGUAGES[@]}" --no-limit --selected "$SELECTED_LANGUAGES" --height 10 --header "Select programming languages")
 
