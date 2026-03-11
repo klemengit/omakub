@@ -195,5 +195,27 @@ va() {
 
 # Install dependencies for jupyter notebook in nvim
 jin() {
-  uv pip install pynvim jupytext ipykernel jupyter_client
+  uv add --dev pynvim jupytext ipykernel jupyter_client dfview
 }
+
+# Run a small http server to open e.g. sphinx documentation
+wp() {
+    python3 -m http.server 8000
+  }
+
+# alias for lightweight nvim
+nvl() {
+    NVIM_LIGHT=1 nvim .
+  }
+
+c() {
+    claude
+  }
+
+dwn() {
+    ls --sort date ~/Downloads/
+  }
+
+y() {
+    yazi
+  }
