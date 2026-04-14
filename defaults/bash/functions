@@ -212,6 +212,31 @@ c() {
     claude
   }
 
+cs() {
+  local PROJECT_DIR="${1:-$PWD}"
+  bwrap \
+    --ro-bind /usr /usr \
+    --symlink usr/bin /bin \
+    --symlink usr/lib /lib \
+    --symlink usr/lib64 /lib64 \
+    --symlink usr/sbin /sbin \
+    --ro-bind /etc /etc \
+    --ro-bind /run/systemd/resolve /run/systemd/resolve \
+    --proc /proc \
+    --dev /dev \
+    --tmpfs /tmp \
+    --ro-bind "$HOME" "$HOME" \
+    --bind "$HOME/.claude" "$HOME/.claude" \
+    --bind "$HOME/.claude.json" "$HOME/.claude.json" \
+    --bind "$PROJECT_DIR" "$PROJECT_DIR" \
+    --chdir "$PROJECT_DIR" \
+    -- claude --dangerously-skip-permissions
+  }
+
+oc() {
+    opencode
+  }
+
 dwn() {
     ls --sort date ~/Downloads/
   }
@@ -219,3 +244,8 @@ dwn() {
 y() {
     yazi
   }
+
+nv() {
+  zellij action new-pane --direction right -- bash -c "claude; exec bash"
+  nvim .
+}
