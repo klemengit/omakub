@@ -225,6 +225,8 @@ cs() {
     --proc /proc \
     --dev /dev \
     --tmpfs /tmp \
+    --ro-bind /tmp/.X11-unix /tmp/.X11-unix \
+    --bind "${XDG_RUNTIME_DIR:-/run/user/$(id -u)}" "${XDG_RUNTIME_DIR:-/run/user/$(id -u)}" \
     --ro-bind "$HOME" "$HOME" \
     --bind "$HOME/.claude" "$HOME/.claude" \
     --bind "$HOME/.claude.json" "$HOME/.claude.json" \
