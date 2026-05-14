@@ -251,3 +251,36 @@ nv() {
   zellij action new-pane --direction right -- bash -c "claude; exec bash"
   nvim .
 }
+
+# Pick an external/removable drive and safely eject it
+e() {
+  local DISKS=() NAME SIZE HOTPLUG TYPE MODEL LABELS MNTS
+  while read -r NAME SIZE HOTPLUG TYPE; do
+    [ "$HOTPLUG" = "1" ] && [ "$TYPE" = "disk" ] || continue
+    MODEL=$(lsblk -dn -o MODEL "/dev/$NAME" 2>/dev/null | xargs)
+    LABELS=$(lsblk -lno LABEL "/dev/$NAME" 2>/dev/null | grep -v '^$' | paste -sd '/' - | sed 's|/| / |g')
+    MNTS=$(lsblk -lno MOUNTPOINT "/dev/$NAME" 2>/dev/null | grep -v '^$' | paste -sd, -)
+    DISKS+=("/dev/$NAME${LABELS:+ — $LABELS} ($SIZE${MODEL:+, $MODEL}${MNTS:+, $MNTS})")
+  done < <(lsblk -dn -o NAME,SIZE,HOTPLUG,TYPE)
+
+  if [ ${#DISKS[@]} -eq 0 ]; then
+    echo "No external drives found."
+    return 1
+  fi
+
+  local CHOICE
+  CHOICE=$(printf '%s\n' "${DISKS[@]}" | gum choose --header "Select drive to eject")
+  [ -z "$CHOICE" ] && return 0
+
+  local DEV="${CHOICE%% *}"
+  gum confirm "Eject $DEV?" || return 0
+
+  local PART MNT
+  while read -r PART MNT; do
+    [ -n "$MNT" ] || continue
+    udisksctl unmount -b "$PART" || return 1
+  done < <(lsblk -nrpo NAME,MOUNTPOINT "$DEV")
+
+  gum spin --spinner globe --title "Ejecting $DEV..." -- udisksctl power-off -b "$DEV" \
+    && echo "Ejected $DEV"
+}
