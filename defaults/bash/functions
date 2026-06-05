@@ -240,8 +240,31 @@ oc() {
   }
 
 dwn() {
-    ls --sort date ~/Downloads/
-  }
+  local TARGET="$PWD"
+  local DL="$HOME/Downloads"
+
+  [ -d "$DL" ] || { echo "Downloads directory not found."; return 1; }
+  type -P gum >/dev/null || { echo "gum required."; return 1; }
+
+  local ITEMS
+  ITEMS=$(command ls -atp "$DL" | grep -Ev '^\.{1,2}/$')
+  [ -z "$ITEMS" ] && { echo "Downloads is empty."; return 0; }
+
+  local ITEM
+  ITEM=$(printf '%s\n' "$ITEMS" | gum choose --height=50 --header="Downloads  →  $TARGET")
+  [ -z "$ITEM" ] && return 0
+
+  local ACTION
+  ACTION=$(gum choose --header="$ITEM" "Move" "Copy" "Cancel")
+  [ -z "$ACTION" ] || [ "$ACTION" = "Cancel" ] && return 0
+
+  local FILE="${ITEM%/}"
+  if [ "$ACTION" = "Move" ]; then
+    mv -v "$DL/$FILE" "$TARGET/"
+  else
+    cp -rv "$DL/$FILE" "$TARGET/"
+  fi
+}
 
 y() {
     yazi
@@ -269,11 +292,16 @@ e() {
   fi
 
   local CHOICE
-  CHOICE=$(printf '%s\n' "${DISKS[@]}" | gum choose --header "Select drive to eject")
+  CHOICE=$(printf '%s\n' "${DISKS[@]}" | gum choose --header "Select drive")
   [ -z "$CHOICE" ] && return 0
 
   local DEV="${CHOICE%% *}"
-  gum confirm "Eject $DEV?" || return 0
+
+  local ACTION
+  ACTION=$(gum choose --header "Action for $DEV" "Eject" "Unmount")
+  [ -z "$ACTION" ] && return 0
+
+  gum confirm "$ACTION $DEV?" || return 0
 
   local PART MNT
   while read -r PART MNT; do
@@ -281,6 +309,72 @@ e() {
     udisksctl unmount -b "$PART" || return 1
   done < <(lsblk -nrpo NAME,MOUNTPOINT "$DEV")
 
-  gum spin --spinner globe --title "Ejecting $DEV..." -- udisksctl power-off -b "$DEV" \
-    && echo "Ejected $DEV"
+  if [ "$ACTION" = "Eject" ]; then
+    gum spin --spinner globe --title "Ejecting $DEV..." -- udisksctl power-off -b "$DEV" \
+      && echo "Ejected $DEV"
+  else
+    echo "Unmounted $DEV"
+  fi
+}
+
+# Move or copy files from a source folder (default ~/Downloads) into any
+# subdirectory of a destination root (default ~/Data). Telescope-style:
+#   Stage 1 — fzf --multi over source files (Tab to mark, Enter to confirm)
+#   Stage 2 — fzf over the full recursive directory tree (type to filter)
+#     Enter = Move (confirmed), Ctrl-Y = Copy
+f() {
+  local SRC="${1:-$HOME/Downloads}"
+  local ROOT="${2:-$HOME/Data}"
+
+  [ -d "$SRC" ]  || { echo "Not a directory: $SRC"; return 1; }
+  [ -d "$ROOT" ] || { echo "Destination root not found: $ROOT"; return 1; }
+
+  type -P fzf >/dev/null || { echo "fzf required."; return 1; }
+  local FD; FD=$(type -P fdfind || type -P fd)
+  [ -n "$FD" ] || { echo "fd/fdfind required."; return 1; }
+
+  # Stage 1: pick source files
+  local FILES
+  FILES=$(command ls -At "$SRC" | fzf \
+    --multi \
+    --height=80% --reverse \
+    --prompt="files> " \
+    --header="Tab: mark   Enter: confirm   Esc: cancel  [$SRC]" \
+    --preview="ls -lAhd '$SRC'/{} 2>/dev/null; echo; file -b '$SRC'/{} 2>/dev/null" \
+    --preview-window=right:50%:wrap)
+  [ -z "$FILES" ] && return 0
+
+  # Stage 2: pick destination — full recursive tree, live fuzzy
+  local PICK KEY DEST
+  PICK=$("$FD" --type d --hidden --exclude .git . "$ROOT" 2>/dev/null | fzf \
+    --height=80% --reverse \
+    --prompt="dest> " \
+    --header="Enter: move   Ctrl-Y: copy   Esc: cancel  [$ROOT]" \
+    --preview="ls -lAh {} 2>/dev/null" \
+    --preview-window=right:50%:wrap \
+    --expect=ctrl-y)
+  [ -z "$PICK" ] && return 0
+
+  KEY=$(printf '%s\n' "$PICK" | sed -n 1p)
+  DEST=$(printf '%s\n' "$PICK" | sed -n 2p)
+  [ -z "$DEST" ] && return 0
+
+  local OP CMD
+  if [ "$KEY" = "ctrl-y" ]; then
+    OP="Copy"; CMD=(cp -rv)
+  else
+    OP="Move"; CMD=(mv -v)
+  fi
+
+  local COUNT; COUNT=$(printf '%s\n' "$FILES" | wc -l)
+  # Confirm only for the destructive op
+  if [ "$OP" = "Move" ]; then
+    gum confirm "Move $COUNT item(s) → $DEST ?" || return 0
+  fi
+
+  local FILE
+  while IFS= read -r FILE; do
+    [ -z "$FILE" ] && continue
+    "${CMD[@]}" "$SRC/$FILE" "$DEST/" || return 1
+  done <<< "$FILES"
 }
